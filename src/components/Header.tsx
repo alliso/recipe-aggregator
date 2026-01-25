@@ -8,7 +8,6 @@ export default function Header() {
 
   const navItems = [
     { href: '/', label: 'Recetas' },
-    { href: '/send', label: 'Enviar' },
     { href: '/settings', label: 'Ajustes' }
   ]
 
