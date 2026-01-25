@@ -2,6 +2,7 @@ export interface Recipe {
   id: number
   name: string
   description: string | null
+  steps: string | null
   servings: number
   createdAt: Date
   updatedAt: Date
@@ -29,6 +30,7 @@ export interface Settings {
 export interface RecipeFormData {
   name: string
   description?: string
+  steps?: string
   servings?: number
 }
 

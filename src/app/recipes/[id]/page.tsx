@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
+import ReactMarkdown from 'react-markdown'
 import type { Recipe, Ingredient } from '@/types'
 
 const inputStyle = {
@@ -17,10 +18,12 @@ export default function RecipeDetail() {
   const [recipe, setRecipe] = useState<Recipe | null>(null)
   const [loading, setLoading] = useState(true)
   const [editing, setEditing] = useState(false)
-  const [formData, setFormData] = useState({ name: '', description: '', servings: 1 })
+  const [formData, setFormData] = useState({ name: '', description: '', servings: 1, steps: '' })
   const [showIngredientForm, setShowIngredientForm] = useState(false)
   const [ingredientForm, setIngredientForm] = useState({ name: '', quantity: '', unit: '', notes: '' })
   const [editingIngredient, setEditingIngredient] = useState<number | null>(null)
+  const [editingSteps, setEditingSteps] = useState(false)
+  const [stepsInput, setStepsInput] = useState('')
 
   useEffect(() => {
     fetchRecipe()
@@ -32,7 +35,8 @@ export default function RecipeDetail() {
       if (res.ok) {
         const data = await res.json()
         setRecipe(data)
-        setFormData({ name: data.name, description: data.description || '', servings: data.servings })
+        setFormData({ name: data.name, description: data.description || '', servings: data.servings, steps: data.steps || '' })
+        setStepsInput(data.steps || '')
       } else {
         router.push('/')
       }
@@ -57,6 +61,22 @@ export default function RecipeDetail() {
       }
     } catch (error) {
       console.error('Error updating recipe:', error)
+    }
+  }
+
+  async function handleSaveSteps() {
+    try {
+      const res = await fetch(`/api/recipes/${params.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ steps: stepsInput })
+      })
+      if (res.ok) {
+        setEditingSteps(false)
+        fetchRecipe()
+      }
+    } catch (error) {
+      console.error('Error saving steps:', error)
     }
   }
 
@@ -232,7 +252,7 @@ export default function RecipeDetail() {
       )}
 
       <div
-        className="p-4 rounded-xl"
+        className="p-4 rounded-xl mb-4"
         style={{ background: 'var(--card-bg)', border: '1px solid var(--card-border)' }}
       >
         <div className="flex justify-between items-center mb-4">
@@ -403,6 +423,87 @@ export default function RecipeDetail() {
         ) : (
           <p className="text-center py-4 text-sm" style={{ color: 'var(--text-muted)' }}>
             No hay ingredientes todavía
+          </p>
+        )}
+      </div>
+
+      <div
+        className="p-4 rounded-xl"
+        style={{ background: 'var(--card-bg)', border: '1px solid var(--card-border)' }}
+      >
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-lg font-medium" style={{ color: 'var(--text-muted)' }}>Pasos</h2>
+          <button
+            onClick={() => {
+              if (editingSteps) {
+                setStepsInput(recipe.steps || '')
+              }
+              setEditingSteps(!editingSteps)
+            }}
+            className="px-3 py-1.5 rounded-lg text-sm font-medium"
+            style={{
+              background: editingSteps ? 'var(--card-border)' : 'var(--accent-blue)',
+              color: editingSteps ? 'var(--text-muted)' : '#fff'
+            }}
+          >
+            {editingSteps ? 'Cancelar' : 'Editar'}
+          </button>
+        </div>
+
+        {editingSteps ? (
+          <div>
+            <textarea
+              value={stepsInput}
+              onChange={(e) => setStepsInput(e.target.value)}
+              placeholder="Escribe los pasos de la receta usando Markdown...
+
+Ejemplo:
+## Preparación
+1. Precalentar el horno a 180°C
+2. Mezclar los ingredientes secos
+
+## Cocción
+1. Hornear durante 25 minutos
+2. Dejar enfriar"
+              className="w-full rounded-lg px-3 py-2 text-sm focus:outline-none min-h-[200px] font-mono"
+              style={inputStyle}
+            />
+            <div className="flex gap-2 mt-3">
+              <button
+                onClick={handleSaveSteps}
+                className="px-4 py-2 rounded-lg text-sm font-medium"
+                style={{ background: 'var(--accent-green)', color: '#fff' }}
+              >
+                Guardar
+              </button>
+            </div>
+          </div>
+        ) : recipe.steps ? (
+          <div
+            className="prose prose-sm max-w-none"
+            style={{ color: 'var(--foreground)' }}
+          >
+            <ReactMarkdown
+              components={{
+                h1: ({ children }) => <h1 className="text-xl font-bold mb-2 mt-4" style={{ color: 'var(--foreground)' }}>{children}</h1>,
+                h2: ({ children }) => <h2 className="text-lg font-semibold mb-2 mt-4" style={{ color: 'var(--foreground)' }}>{children}</h2>,
+                h3: ({ children }) => <h3 className="text-base font-medium mb-2 mt-3" style={{ color: 'var(--foreground)' }}>{children}</h3>,
+                p: ({ children }) => <p className="mb-2" style={{ color: 'var(--foreground)' }}>{children}</p>,
+                ul: ({ children }) => <ul className="list-disc pl-5 mb-2" style={{ color: 'var(--foreground)' }}>{children}</ul>,
+                ol: ({ children }) => <ol className="list-decimal pl-5 mb-2" style={{ color: 'var(--foreground)' }}>{children}</ol>,
+                li: ({ children }) => <li className="mb-1" style={{ color: 'var(--foreground)' }}>{children}</li>,
+                strong: ({ children }) => <strong className="font-semibold">{children}</strong>,
+                em: ({ children }) => <em className="italic">{children}</em>,
+                code: ({ children }) => <code className="px-1 py-0.5 rounded text-xs" style={{ background: 'var(--background)', color: 'var(--accent-blue)' }}>{children}</code>,
+                blockquote: ({ children }) => <blockquote className="border-l-4 pl-3 italic my-2" style={{ borderColor: 'var(--card-border)', color: 'var(--text-muted)' }}>{children}</blockquote>,
+              }}
+            >
+              {recipe.steps}
+            </ReactMarkdown>
+          </div>
+        ) : (
+          <p className="text-center py-4 text-sm" style={{ color: 'var(--text-muted)' }}>
+            No hay pasos todavía. Haz clic en &quot;Editar&quot; para añadirlos.
           </p>
         )}
       </div>
