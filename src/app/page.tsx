@@ -162,7 +162,7 @@ export default function Home() {
         <form
           onSubmit={handleCreateRecipe}
           className="p-4 rounded-xl mb-4"
-          style={{ background: 'var(--card-bg)', border: '1px solid var(--card-border)' }}
+          style={{ background: 'var(--card-bg)', border: '1px solid var(--card-border)', boxShadow: 'var(--card-shadow)' }}
         >
           <div className="grid gap-3">
             <div>
@@ -214,7 +214,7 @@ export default function Home() {
       {recipes.length === 0 ? (
         <div
           className="text-center py-12 rounded-xl"
-          style={{ background: 'var(--card-bg)', border: '1px solid var(--card-border)' }}
+          style={{ background: 'var(--card-bg)', border: '1px solid var(--card-border)', boxShadow: 'var(--card-shadow)' }}
         >
           <p style={{ color: 'var(--text-muted)' }}>No hay recetas todavía</p>
           <p className="text-sm mt-1" style={{ color: 'var(--card-border)' }}>
@@ -231,7 +231,7 @@ export default function Home() {
               <div
                 key={recipe.id}
                 className="p-4 rounded-xl transition-all relative group"
-                style={{ background: 'var(--card-bg)', border: '1px solid var(--card-border)' }}
+                style={{ background: 'var(--card-bg)', border: '1px solid var(--card-border)', boxShadow: 'var(--card-shadow)' }}
               >
                 <button
                   onClick={(e) => handleDeleteRecipe(e, recipe.id)}
@@ -279,7 +279,7 @@ export default function Home() {
                   className="w-full py-2 rounded-lg text-xs font-medium transition-all disabled:opacity-50"
                   style={{ background: 'var(--accent-blue)', color: '#fff' }}
                 >
-                  {isSending ? 'Enviando...' : 'Enviar'}
+                  {isSending ? 'Añadiendo...' : 'Añadir'}
                 </button>
               </div>
             )
