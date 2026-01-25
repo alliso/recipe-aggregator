@@ -9,26 +9,26 @@ export default function Header() {
   const navItems = [
     { href: '/', label: 'Recetas' },
     { href: '/send', label: 'Enviar' },
-    { href: '/settings', label: 'Configuración' }
+    { href: '/settings', label: 'Ajustes' }
   ]
 
   return (
-    <header className="bg-white border-b border-gray-200">
+    <header style={{ background: 'var(--card-bg)', borderBottom: '1px solid var(--card-border)' }}>
       <div className="max-w-4xl mx-auto px-4">
-        <div className="flex items-center justify-between h-16">
-          <Link href="/" className="text-xl font-bold text-gray-900">
+        <div className="flex items-center justify-between h-14">
+          <Link href="/" className="text-lg font-semibold" style={{ color: 'var(--foreground)' }}>
             Recipe Manager
           </Link>
-          <nav className="flex gap-4">
+          <nav className="flex gap-1">
             {navItems.map((item) => (
               <Link
                 key={item.href}
                 href={item.href}
-                className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-                  pathname === item.href
-                    ? 'bg-gray-100 text-gray-900'
-                    : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
-                }`}
+                className="px-3 py-1.5 rounded-lg text-sm font-medium transition-all"
+                style={{
+                  background: pathname === item.href ? 'var(--card-border)' : 'transparent',
+                  color: pathname === item.href ? 'var(--foreground)' : 'var(--text-muted)'
+                }}
               >
                 {item.label}
               </Link>

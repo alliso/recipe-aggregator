@@ -2,6 +2,12 @@
 
 import { useEffect, useState } from 'react'
 
+const inputStyle = {
+  background: 'var(--background)',
+  border: '1px solid var(--card-border)',
+  color: 'var(--foreground)'
+}
+
 export default function SettingsPage() {
   const [postUrl, setPostUrl] = useState('')
   const [loading, setLoading] = useState(true)
@@ -39,13 +45,13 @@ export default function SettingsPage() {
       })
 
       if (res.ok) {
-        setMessage({ type: 'success', text: 'Configuración guardada correctamente' })
+        setMessage({ type: 'success', text: 'Configuración guardada' })
       } else {
-        setMessage({ type: 'error', text: 'Error al guardar la configuración' })
+        setMessage({ type: 'error', text: 'Error al guardar' })
       }
     } catch (error) {
       console.error('Error saving settings:', error)
-      setMessage({ type: 'error', text: 'Error al guardar la configuración' })
+      setMessage({ type: 'error', text: 'Error al guardar' })
     } finally {
       setSaving(false)
     }
@@ -69,25 +75,30 @@ export default function SettingsPage() {
       if (res.ok) {
         setMessage({ type: 'success', text: 'Conexión exitosa' })
       } else {
-        setMessage({ type: 'error', text: `Error: ${res.status} ${res.statusText}` })
+        setMessage({ type: 'error', text: `Error: ${res.status}` })
       }
-    } catch (error) {
-      setMessage({ type: 'error', text: 'No se pudo conectar con la URL' })
+    } catch {
+      setMessage({ type: 'error', text: 'No se pudo conectar' })
     }
   }
 
   if (loading) {
-    return <div className="text-center py-8">Cargando...</div>
+    return <div className="text-center py-8" style={{ color: 'var(--text-muted)' }}>Cargando...</div>
   }
 
   return (
     <div>
-      <h1 className="text-2xl font-bold text-gray-900 mb-6">Configuración</h1>
+      <h1 className="text-lg font-medium mb-4" style={{ color: 'var(--text-muted)' }}>
+        Ajustes
+      </h1>
 
-      <div className="bg-white p-6 rounded-lg shadow">
+      <div
+        className="p-4 rounded-xl"
+        style={{ background: 'var(--card-bg)', border: '1px solid var(--card-border)' }}
+      >
         <form onSubmit={handleSave}>
           <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-xs font-medium mb-2" style={{ color: 'var(--text-muted)' }}>
               URL para envío de ingredientes (POST)
             </label>
             <input
@@ -95,30 +106,33 @@ export default function SettingsPage() {
               value={postUrl}
               onChange={(e) => setPostUrl(e.target.value)}
               placeholder="https://ejemplo.com/api/ingredientes"
-              className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full rounded-lg px-3 py-2 text-sm focus:outline-none"
+              style={inputStyle}
             />
-            <p className="text-sm text-gray-500 mt-1">
+            <p className="text-xs mt-2" style={{ color: 'var(--card-border)' }}>
               La lista de ingredientes se enviará a esta URL mediante POST en formato JSON.
             </p>
           </div>
 
           {message && (
             <div
-              className={`mb-4 p-3 rounded-md ${
-                message.type === 'success'
-                  ? 'bg-green-50 text-green-800 border border-green-200'
-                  : 'bg-red-50 text-red-800 border border-red-200'
-              }`}
+              className="mb-4 p-3 rounded-lg text-sm"
+              style={{
+                background: message.type === 'success' ? 'rgba(34, 197, 94, 0.1)' : 'rgba(239, 68, 68, 0.1)',
+                color: message.type === 'success' ? '#22c55e' : '#ef4444',
+                border: `1px solid ${message.type === 'success' ? 'rgba(34, 197, 94, 0.2)' : 'rgba(239, 68, 68, 0.2)'}`
+              }}
             >
               {message.text}
             </div>
           )}
 
-          <div className="flex gap-3">
+          <div className="flex gap-2">
             <button
               type="submit"
               disabled={saving}
-              className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors disabled:opacity-50"
+              className="px-4 py-2 rounded-lg text-sm font-medium disabled:opacity-50"
+              style={{ background: 'var(--accent-blue)', color: '#fff' }}
             >
               {saving ? 'Guardando...' : 'Guardar'}
             </button>
@@ -126,20 +140,29 @@ export default function SettingsPage() {
               type="button"
               onClick={testConnection}
               disabled={!postUrl}
-              className="bg-gray-200 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-300 transition-colors disabled:opacity-50"
+              className="px-4 py-2 rounded-lg text-sm font-medium disabled:opacity-50"
+              style={{ background: 'var(--card-border)', color: 'var(--text-muted)' }}
             >
-              Probar conexión
+              Probar
             </button>
           </div>
         </form>
       </div>
 
-      <div className="mt-6 bg-white p-6 rounded-lg shadow">
-        <h2 className="text-lg font-semibold text-gray-900 mb-3">Formato del envío</h2>
-        <p className="text-sm text-gray-600 mb-3">
-          Cuando envíes la lista de ingredientes, se hará un POST con el siguiente formato JSON:
+      <div
+        className="mt-4 p-4 rounded-xl"
+        style={{ background: 'var(--card-bg)', border: '1px solid var(--card-border)' }}
+      >
+        <h2 className="text-sm font-medium mb-3" style={{ color: 'var(--foreground)' }}>
+          Formato del envío
+        </h2>
+        <p className="text-xs mb-3" style={{ color: 'var(--text-muted)' }}>
+          El POST enviará un JSON con este formato:
         </p>
-        <pre className="bg-gray-100 p-4 rounded-md text-sm overflow-x-auto">
+        <pre
+          className="p-3 rounded-lg text-xs overflow-x-auto"
+          style={{ background: 'var(--background)', color: 'var(--text-muted)' }}
+        >
 {`{
   "ingredients": [
     {
@@ -147,10 +170,9 @@ export default function SettingsPage() {
       "totalQuantity": 500,
       "unit": "g",
       "fromRecipes": ["Ensalada", "Pasta"]
-    },
-    ...
+    }
   ],
-  "timestamp": "2024-01-25T12:00:00.000Z"
+  "timestamp": "2024-01-25T12:00:00Z"
 }`}
         </pre>
       </div>

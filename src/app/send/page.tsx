@@ -89,7 +89,7 @@ export default function SendPage() {
 
   async function handleSend() {
     if (!settings?.postUrl) {
-      setMessage({ type: 'error', text: 'Configura una URL de destino primero' })
+      setMessage({ type: 'error', text: 'Configura una URL primero' })
       return
     }
 
@@ -114,12 +114,12 @@ export default function SendPage() {
       })
 
       if (res.ok) {
-        setMessage({ type: 'success', text: 'Ingredientes enviados correctamente' })
+        setMessage({ type: 'success', text: 'Enviado correctamente' })
       } else {
-        setMessage({ type: 'error', text: `Error: ${res.status} ${res.statusText}` })
+        setMessage({ type: 'error', text: `Error: ${res.status}` })
       }
-    } catch (error) {
-      setMessage({ type: 'error', text: 'No se pudo conectar con la URL de destino' })
+    } catch {
+      setMessage({ type: 'error', text: 'No se pudo conectar' })
     } finally {
       setSending(false)
     }
@@ -128,91 +128,129 @@ export default function SendPage() {
   const aggregatedIngredients = getAggregatedIngredients()
 
   if (loading) {
-    return <div className="text-center py-8">Cargando...</div>
+    return <div className="text-center py-8" style={{ color: 'var(--text-muted)' }}>Cargando...</div>
   }
 
   return (
     <div>
-      <h1 className="text-2xl font-bold text-gray-900 mb-6">Enviar Ingredientes</h1>
+      <h1 className="text-lg font-medium mb-4" style={{ color: 'var(--text-muted)' }}>
+        Enviar Ingredientes
+      </h1>
 
       {!settings?.postUrl && (
-        <div className="bg-yellow-50 border border-yellow-200 p-4 rounded-lg mb-6">
-          <p className="text-yellow-800">
-            No hay URL configurada.{' '}
-            <Link href="/settings" className="font-medium underline">
-              Configura una URL
-            </Link>{' '}
-            para poder enviar ingredientes.
-          </p>
+        <div
+          className="p-3 rounded-lg mb-4 text-sm"
+          style={{
+            background: 'rgba(251, 191, 36, 0.1)',
+            border: '1px solid rgba(251, 191, 36, 0.2)',
+            color: '#fbbf24'
+          }}
+        >
+          No hay URL configurada.{' '}
+          <Link href="/settings" className="underline font-medium">
+            Configurar
+          </Link>
         </div>
       )}
 
-      <div className="grid md:grid-cols-2 gap-6">
-        <div className="bg-white p-6 rounded-lg shadow">
-          <div className="flex justify-between items-center mb-4">
-            <h2 className="text-lg font-semibold text-gray-900">Seleccionar Recetas</h2>
+      <div className="grid md:grid-cols-2 gap-4">
+        <div
+          className="p-4 rounded-xl"
+          style={{ background: 'var(--card-bg)', border: '1px solid var(--card-border)' }}
+        >
+          <div className="flex justify-between items-center mb-3">
+            <h2 className="text-sm font-medium" style={{ color: 'var(--foreground)' }}>
+              Seleccionar Recetas
+            </h2>
             <button
               onClick={selectAll}
-              className="text-blue-600 hover:text-blue-800 text-sm font-medium"
+              className="text-xs font-medium"
+              style={{ color: 'var(--accent-blue)' }}
             >
-              {selectedRecipes.size === recipes.length ? 'Deseleccionar todo' : 'Seleccionar todo'}
+              {selectedRecipes.size === recipes.length ? 'Ninguna' : 'Todas'}
             </button>
           </div>
 
           {recipes.length === 0 ? (
-            <p className="text-gray-500 text-center py-4">
+            <p className="text-center py-4 text-sm" style={{ color: 'var(--text-muted)' }}>
               No hay recetas.{' '}
-              <Link href="/" className="text-blue-600 hover:text-blue-800">
-                Crea una receta
+              <Link href="/" style={{ color: 'var(--accent-blue)' }}>
+                Crear una
               </Link>
             </p>
           ) : (
-            <ul className="divide-y divide-gray-200">
+            <ul className="space-y-2">
               {recipes.map(recipe => (
-                <li key={recipe.id} className="py-3">
-                  <label className="flex items-center cursor-pointer">
-                    <input
-                      type="checkbox"
-                      checked={selectedRecipes.has(recipe.id)}
-                      onChange={() => toggleRecipe(recipe.id)}
-                      className="h-4 w-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
-                    />
-                    <div className="ml-3">
-                      <span className="font-medium text-gray-900">{recipe.name}</span>
-                      <span className="text-sm text-gray-500 ml-2">
-                        ({recipe.ingredients?.length || 0} ingredientes)
+                <li
+                  key={recipe.id}
+                  className="p-3 rounded-lg cursor-pointer transition-all"
+                  style={{
+                    background: selectedRecipes.has(recipe.id)
+                      ? 'rgba(59, 130, 246, 0.1)'
+                      : 'var(--background)',
+                    border: selectedRecipes.has(recipe.id)
+                      ? '1px solid rgba(59, 130, 246, 0.3)'
+                      : '1px solid transparent'
+                  }}
+                  onClick={() => toggleRecipe(recipe.id)}
+                >
+                  <div className="flex items-center gap-3">
+                    <div
+                      className="w-5 h-5 rounded flex items-center justify-center text-xs"
+                      style={{
+                        background: selectedRecipes.has(recipe.id) ? 'var(--accent-blue)' : 'var(--card-border)',
+                        color: selectedRecipes.has(recipe.id) ? '#fff' : 'transparent'
+                      }}
+                    >
+                      ✓
+                    </div>
+                    <div>
+                      <span className="text-sm font-medium" style={{ color: 'var(--foreground)' }}>
+                        {recipe.name}
+                      </span>
+                      <span className="text-xs ml-2" style={{ color: 'var(--text-muted)' }}>
+                        {recipe.ingredients?.length || 0} ing.
                       </span>
                     </div>
-                  </label>
+                  </div>
                 </li>
               ))}
             </ul>
           )}
         </div>
 
-        <div className="bg-white p-6 rounded-lg shadow">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">Vista Previa</h2>
+        <div
+          className="p-4 rounded-xl"
+          style={{ background: 'var(--card-bg)', border: '1px solid var(--card-border)' }}
+        >
+          <h2 className="text-sm font-medium mb-3" style={{ color: 'var(--foreground)' }}>
+            Vista Previa
+          </h2>
 
           {selectedRecipes.size === 0 ? (
-            <p className="text-gray-500 text-center py-4">
-              Selecciona recetas para ver los ingredientes
+            <p className="text-center py-4 text-sm" style={{ color: 'var(--text-muted)' }}>
+              Selecciona recetas
             </p>
           ) : aggregatedIngredients.length === 0 ? (
-            <p className="text-gray-500 text-center py-4">
-              Las recetas seleccionadas no tienen ingredientes
+            <p className="text-center py-4 text-sm" style={{ color: 'var(--text-muted)' }}>
+              Sin ingredientes
             </p>
           ) : (
-            <ul className="divide-y divide-gray-200 mb-4">
+            <ul className="space-y-2 mb-4">
               {aggregatedIngredients.map((ing, idx) => (
-                <li key={idx} className="py-2">
-                  <div className="flex justify-between">
-                    <span className="font-medium text-gray-900">{ing.name}</span>
-                    <span className="text-gray-600">
+                <li
+                  key={idx}
+                  className="p-2 rounded-lg"
+                  style={{ background: 'var(--background)' }}
+                >
+                  <div className="flex justify-between text-sm">
+                    <span style={{ color: 'var(--foreground)' }}>{ing.name}</span>
+                    <span style={{ color: 'var(--text-muted)' }}>
                       {ing.totalQuantity} {ing.unit}
                     </span>
                   </div>
-                  <div className="text-xs text-gray-400">
-                    De: {ing.fromRecipes.join(', ')}
+                  <div className="text-xs" style={{ color: 'var(--card-border)' }}>
+                    {ing.fromRecipes.join(', ')}
                   </div>
                 </li>
               ))}
@@ -221,24 +259,29 @@ export default function SendPage() {
 
           {message && (
             <div
-              className={`mb-4 p-3 rounded-md ${
-                message.type === 'success'
-                  ? 'bg-green-50 text-green-800 border border-green-200'
-                  : 'bg-red-50 text-red-800 border border-red-200'
-              }`}
+              className="mb-4 p-3 rounded-lg text-sm"
+              style={{
+                background: message.type === 'success' ? 'rgba(34, 197, 94, 0.1)' : 'rgba(239, 68, 68, 0.1)',
+                color: message.type === 'success' ? '#22c55e' : '#ef4444',
+                border: `1px solid ${message.type === 'success' ? 'rgba(34, 197, 94, 0.2)' : 'rgba(239, 68, 68, 0.2)'}`
+              }}
             >
               {message.text}
             </div>
           )}
 
-          <div className="border-t border-gray-200 pt-4">
-            <p className="text-sm text-gray-500 mb-3">
-              URL destino: {settings?.postUrl || 'No configurada'}
+          <div
+            className="pt-3"
+            style={{ borderTop: '1px solid var(--card-border)' }}
+          >
+            <p className="text-xs mb-3 truncate" style={{ color: 'var(--card-border)' }}>
+              {settings?.postUrl || 'URL no configurada'}
             </p>
             <button
               onClick={handleSend}
               disabled={sending || selectedRecipes.size === 0 || !settings?.postUrl}
-              className="w-full bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full py-2 rounded-lg text-sm font-medium disabled:opacity-50"
+              style={{ background: 'var(--accent-green)', color: '#fff' }}
             >
               {sending ? 'Enviando...' : 'Enviar Ingredientes'}
             </button>
