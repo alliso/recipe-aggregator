@@ -23,6 +23,11 @@ export default function Home() {
   const [settings, setSettings] = useState<Settings | null>(null)
   const [sendingId, setSendingId] = useState<number | null>(null)
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string; recipeId?: number } | null>(null)
+  const [search, setSearch] = useState('')
+
+  const filteredRecipes = recipes.filter(recipe =>
+    recipe.name.toLowerCase().includes(search.toLowerCase())
+  )
 
   useEffect(() => {
     fetchRecipes()
@@ -68,20 +73,6 @@ export default function Home() {
       }
     } catch (error) {
       console.error('Error creating recipe:', error)
-    }
-  }
-
-  async function handleDeleteRecipe(e: React.MouseEvent, id: number) {
-    e.preventDefault()
-    e.stopPropagation()
-    if (!confirm('¿Estás seguro de que quieres eliminar esta receta?')) return
-    try {
-      const res = await fetch(`/api/recipes/${id}`, { method: 'DELETE' })
-      if (res.ok) {
-        fetchRecipes()
-      }
-    } catch (error) {
-      console.error('Error deleting recipe:', error)
     }
   }
 
@@ -158,6 +149,19 @@ export default function Home() {
         </button>
       </div>
 
+      <input
+        type="text"
+        placeholder="Buscar recetas..."
+        value={search}
+        onChange={(e) => setSearch(e.target.value)}
+        className="w-full rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 mb-4"
+        style={{
+          background: 'var(--card-bg)',
+          border: '1px solid var(--card-border)',
+          color: 'var(--foreground)'
+        }}
+      />
+
       {showForm && (
         <form
           onSubmit={handleCreateRecipe}
@@ -221,27 +225,25 @@ export default function Home() {
             Crea tu primera receta para empezar
           </p>
         </div>
+      ) : filteredRecipes.length === 0 ? (
+        <div
+          className="text-center py-8 rounded-xl"
+          style={{ background: 'var(--card-bg)', border: '1px solid var(--card-border)', boxShadow: 'var(--card-shadow)' }}
+        >
+          <p style={{ color: 'var(--text-muted)' }}>No se encontraron recetas</p>
+        </div>
       ) : (
         <div className="grid grid-cols-2 gap-3">
-          {recipes.map((recipe) => {
+          {filteredRecipes.map((recipe) => {
             const isSending = sendingId === recipe.id
             const recipeMessage = message?.recipeId === recipe.id ? message : null
 
             return (
               <div
                 key={recipe.id}
-                className="p-4 rounded-xl transition-all relative group"
+                className="p-4 rounded-xl transition-all"
                 style={{ background: 'var(--card-bg)', border: '1px solid var(--card-border)', boxShadow: 'var(--card-shadow)' }}
               >
-                <button
-                  onClick={(e) => handleDeleteRecipe(e, recipe.id)}
-                  className="absolute top-2 right-2 w-6 h-6 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity text-xs"
-                  style={{ background: 'var(--background)', color: 'var(--text-muted)' }}
-                  title="Eliminar"
-                >
-                  ×
-                </button>
-
                 <Link href={`/recipes/${recipe.id}`} className="block mb-3">
                   <div className="flex items-center gap-3">
                     <div
