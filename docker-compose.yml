@@ -1,0 +1,15 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    volumes:
+      - recipe-data:/app/data
+    environment:
+      - DATABASE_URL=file:/app/data/prod.db
+    restart: unless-stopped
+
+volumes:
+  recipe-data:
