@@ -236,7 +236,7 @@ export default function RecipeDetail() {
               {recipe.description && (
                 <p className="text-sm mt-1" style={{ color: 'var(--text-muted)' }}>{recipe.description}</p>
               )}
-              <p className="text-xs mt-2" style={{ color: 'var(--card-border)' }}>
+              <p className="text-xs mt-2" style={{ color: 'var(--text-muted)' }}>
                 {recipe.servings} {recipe.servings === 1 ? 'porción' : 'porciones'}
               </p>
             </div>
