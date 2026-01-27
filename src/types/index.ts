@@ -23,6 +23,7 @@ export interface Ingredient {
 export interface Settings {
   id: number
   postUrl: string
+  apiKey: string
   createdAt: Date
   updatedAt: Date
 }

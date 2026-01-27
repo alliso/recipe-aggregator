@@ -9,7 +9,7 @@ export async function GET() {
 
     if (!settings) {
       settings = await prisma.settings.create({
-        data: { id: 1, postUrl: '' }
+        data: { id: 1, postUrl: '', apiKey: '' }
       })
     }
 
@@ -26,8 +26,8 @@ export async function PUT(request: Request) {
 
     const settings = await prisma.settings.upsert({
       where: { id: 1 },
-      update: { postUrl: body.postUrl },
-      create: { id: 1, postUrl: body.postUrl }
+      update: { postUrl: body.postUrl, apiKey: body.apiKey ?? '' },
+      create: { id: 1, postUrl: body.postUrl, apiKey: body.apiKey ?? '' }
     })
 
     return NextResponse.json(settings)

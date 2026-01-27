@@ -100,9 +100,12 @@ export default function Home() {
     }))
 
     try {
+      const headers: Record<string, string> = { 'Content-Type': 'application/json' }
+      if (settings.apiKey) headers['x-api-key'] = settings.apiKey
+
       const res = await fetch(settings.postUrl, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers,
         body: JSON.stringify({
           recipe: recipe.name,
           ingredients,

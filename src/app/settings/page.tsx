@@ -10,6 +10,7 @@ const inputStyle = {
 
 export default function SettingsPage() {
   const [postUrl, setPostUrl] = useState('')
+  const [apiKey, setApiKey] = useState('')
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null)
@@ -24,6 +25,7 @@ export default function SettingsPage() {
       if (res.ok) {
         const data = await res.json()
         setPostUrl(data.postUrl || '')
+        setApiKey(data.apiKey || '')
       }
     } catch (error) {
       console.error('Error fetching settings:', error)
@@ -41,7 +43,7 @@ export default function SettingsPage() {
       const res = await fetch('/api/settings', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ postUrl })
+        body: JSON.stringify({ postUrl, apiKey })
       })
 
       if (res.ok) {
@@ -66,9 +68,12 @@ export default function SettingsPage() {
     setMessage(null)
 
     try {
+      const headers: Record<string, string> = { 'Content-Type': 'application/json' }
+      if (apiKey) headers['x-api-key'] = apiKey
+
       const res = await fetch(postUrl, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers,
         body: JSON.stringify({ test: true, timestamp: new Date().toISOString() })
       })
 
@@ -111,6 +116,23 @@ export default function SettingsPage() {
             />
             <p className="text-xs mt-2" style={{ color: 'var(--card-border)' }}>
               La lista de ingredientes se enviará a esta URL mediante POST en formato JSON.
+            </p>
+          </div>
+
+          <div className="mb-4">
+            <label className="block text-xs font-medium mb-2" style={{ color: 'var(--text-muted)' }}>
+              API Key (header x-api-key)
+            </label>
+            <input
+              type="password"
+              value={apiKey}
+              onChange={(e) => setApiKey(e.target.value)}
+              placeholder="Tu API key (opcional)"
+              className="w-full rounded-lg px-3 py-2 text-sm focus:outline-none"
+              style={inputStyle}
+            />
+            <p className="text-xs mt-2" style={{ color: 'var(--card-border)' }}>
+              Se enviará como header <code>x-api-key</code> en cada petición POST.
             </p>
           </div>
 
