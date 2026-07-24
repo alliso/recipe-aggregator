@@ -5,7 +5,7 @@ FROM base AS deps
 RUN apk add --no-cache libc6-compat openssl
 WORKDIR /app
 
-RUN corepack enable && corepack prepare pnpm@latest --activate
+RUN corepack enable && corepack prepare pnpm@9 --activate
 
 COPY package.json pnpm-lock.yaml ./
 COPY prisma ./prisma/
@@ -17,7 +17,7 @@ RUN pnpm prisma generate
 FROM base AS builder
 WORKDIR /app
 
-RUN corepack enable && corepack prepare pnpm@latest --activate
+RUN corepack enable && corepack prepare pnpm@9 --activate
 
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
