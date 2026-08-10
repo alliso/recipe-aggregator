@@ -36,6 +36,14 @@ pnpm lint             # Run ESLint
 - Recipe detail (`recipes/[id]/page.tsx`): Full recipe editing with ingredients and Markdown steps
 - Settings (`settings/page.tsx`): Configure export URL
 
+### MCP Server (`mcp/server.mjs`)
+- Stdio MCP server wrapping the REST API over HTTP (no direct Prisma access)
+- Targets `RECIPES_BASE_URL` (defaults to the production deploy at `https://recipes.alliso.es`)
+- Registered in `.mcp.json` at the repo root; run manually with `pnpm mcp`
+- Tools mirror the API plus `shopping_list`, which aggregates ingredients across recipes
+- `POST /api/recipes` ignores `steps`, so `create_recipe` follows up with a `PUT`
+- Deliberately exposes no Settings tools: the record holds the export `apiKey`
+
 ### Theme System
 - Context provider at `src/contexts/ThemeContext.tsx`
 - Persisted to localStorage

@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "recipes": {
+      "type": "stdio",
+      "command": "node",
+      "args": ["mcp/server.mjs"],
+      "env": {
+        "RECIPES_BASE_URL": "${RECIPES_BASE_URL:-https://recipes.alliso.es}"
+      }
+    }
+  }
+}

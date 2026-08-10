@@ -20,6 +20,31 @@ You can start editing the page by modifying `app/page.tsx`. The page auto-update
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
+## Servidor MCP
+
+`mcp/server.mjs` expone la API de recetas como herramientas MCP (transporte stdio). Por defecto
+apunta al despliegue de producción (`https://recipes.alliso.es`).
+
+Está registrado en `.mcp.json`, así que cualquier cliente MCP que lea la configuración del proyecto
+(Claude Code, entre otros) lo detecta al abrir el repo. Herramientas disponibles:
+
+| Herramienta | Qué hace |
+| --- | --- |
+| `list_recipes` | Lista resumida de recetas, con filtro opcional por texto |
+| `get_recipe` | Receta completa con pasos e ingredientes |
+| `create_recipe` / `update_recipe` / `delete_recipe` | Alta, edición y borrado de recetas |
+| `add_ingredient` / `update_ingredient` / `delete_ingredient` | Gestión de ingredientes |
+| `shopping_list` | Suma los ingredientes de varias recetas, escalando por raciones |
+
+Variables de entorno:
+
+- `RECIPES_BASE_URL` — instancia a la que apuntar (por defecto la de producción; usa
+  `http://localhost:3000` para desarrollo).
+- `RECIPES_API_KEY` — se envía como cabecera `x-api-key`. Opcional, para cuando la API tenga
+  autenticación.
+
+Para lanzarlo a mano: `pnpm mcp`.
+
 ## Learn More
 
 To learn more about Next.js, take a look at the following resources:
