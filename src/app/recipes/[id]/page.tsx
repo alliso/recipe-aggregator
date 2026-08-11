@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
 import ReactMarkdown from 'react-markdown'
+import WakeLockToggle from '@/components/WakeLockToggle'
 import type { Recipe, Ingredient, Settings } from '@/types'
 
 const inputStyle = {
@@ -254,13 +255,16 @@ export default function RecipeDetail() {
 
   return (
     <div>
-      <Link
-        href="/"
-        className="text-sm mb-4 inline-block"
-        style={{ color: 'var(--text-muted)' }}
-      >
-        ← Volver a recetas
-      </Link>
+      <div className="flex items-center justify-between mb-4">
+        <Link
+          href="/"
+          className="text-sm"
+          style={{ color: 'var(--text-muted)' }}
+        >
+          ← Volver a recetas
+        </Link>
+        <WakeLockToggle />
+      </div>
 
       {editing ? (
         <form
